@@ -1,11 +1,7 @@
 # Личный проект «Кексобукинг»
 
 * Студент: [Дмитрий Сенин](https://up.htmlacademy.ru/javascript/27/user/1653665).
-<<<<<<< HEAD
-* Наставник: `неизвестно`.
-=======
 * Наставник:[Михаил Карямин](https://up.htmlacademy.ru/profession/react/11/javascript/27/user/959581).
->>>>>>> 4eba6a24371b06db70b8794ec2af80d123a07b3b
 
 ---
 
