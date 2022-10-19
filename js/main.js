@@ -1,6 +1,3 @@
-/* Очень дико извиняюсь что все долго делаю ибо весь месяц я валялся на больничном с жуткой болью в спине и не мог спокойно сидеть, а сейчас пытаюссь все наверстать */
-
-
 let randomImageNumber = [1,2,3,4,5,6,7,8,9,10];
 const TYPE_HOUSING = [
   'palace',
@@ -8,12 +5,12 @@ const TYPE_HOUSING = [
   'house',
   'bungalow',
   'hotel'
-]
+];
 const TIME_HOURS = [
   '12:00',
   '13:00',
   '14:00'
-]
+];
 const TYPE_FEATURES = [
   'wifi',
   'dishwasher',
@@ -21,15 +18,13 @@ const TYPE_FEATURES = [
   'washer',
   'elevator',
   'conditioner'
-]
+];
 
 const TYPE_PHOTOS = [
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/duonguyen-8LrGtIxxa4w.jpg',
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/brandon-hoogenboom-SNxQGWxZQi0.jpg',
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/claire-rendall-b6kAwr1i0Iw.jpg',
-]
-
-
+];
 
 const getRandomPositiveInteger = (a, b) => {
   if (a < 0 || b < 0) {
@@ -51,23 +46,28 @@ function getRandomPositiveFloat (a, b, digits = 1) {
   return +result.toFixed(digits);
 }
 
-const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length -1)];
-const getRandomElement = (element) => getRandomPositiveInteger(1, element);
+const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
+const getRandomNumber = (element) => getRandomPositiveInteger(1, element);
 const author = () => ({
   avatar: function() {
     const RandomImage = getRandomArrayElement(randomImageNumber);
-    randomImageNumber = randomImageNumber.filter(function(number) {return number  !== RandomImage});
-    const Rezult = 'img/avatars/user'+ (RandomImage < 10 ? '0' + RandomImage: String(RandomImage)) +  '.png';
-    return Rezult;
+    randomImageNumber = randomImageNumber.filter((number) => number !== RandomImage);
+    const rezult = `img/avatars/user${String(RandomImage).padStart(2,'0')}.png`;
+    return rezult;
   }
+});
+const location = () => ({
+  lat: getRandomPositiveFloat(35.65000,35.70000, 5),
+  lng: getRandomPositiveFloat(139.70000,139.80000, 5)
+
 });
 const offer = () => ({
   title : 'Random Zalovok',
-  address: '',
-  price : getRandomElement(1000),
+  address: `${location.lat}${location.lng}`,
+  price : getRandomNumber(1000),
   type: getRandomArrayElement(TYPE_HOUSING),
-  rooms: getRandomElement(5),
-  guests: getRandomElement(10),
+  rooms: getRandomNumber(5),
+  guests: getRandomNumber(10),
   checkin: getRandomArrayElement(TIME_HOURS),
   checkout: getRandomArrayElement(TIME_HOURS),
   features: function () {
@@ -91,12 +91,5 @@ const offer = () => ({
   }
 });
 
-const location = () => ({
-  lat: getRandomPositiveFloat(35.65000,35.70000, 5),
-  lng: getRandomPositiveFloat(139.70000,139.80000, 5)
-
-});
-
 const Author = Array.from({length: 10}, author);
 const Offer = Array.from({length: 10}, offer);
-
