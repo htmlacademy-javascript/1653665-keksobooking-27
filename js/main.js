@@ -26,6 +26,7 @@ const TYPE_PHOTOS = [
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/claire-rendall-b6kAwr1i0Iw.jpg',
 ];
 
+const NEW_AD = 10;
 const getRandomPositiveInteger = (a, b) => {
   if (a < 0 || b < 0) {
     return NaN;
@@ -48,18 +49,47 @@ function getRandomPositiveFloat (a, b, digits = 1) {
 
 const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
 const getRandomNumber = (element) => getRandomPositiveInteger(1, element);
-const author = () => ({
-  avatar: function() {
-    const RandomImage = getRandomArrayElement(randomImageNumber);
-    randomImageNumber = randomImageNumber.filter((number) => number !== RandomImage);
-    const rezult = `img/avatars/user${String(RandomImage).padStart(2,'0')}.png`;
-    return rezult;
+
+const getAvatar = () => {
+  const RandomImage = getRandomArrayElement(randomImageNumber);
+  randomImageNumber = randomImageNumber.filter((number) => number !== RandomImage);
+  const rezult = `img/avatars/user${String(RandomImage).padStart(2,'0')}.png`;
+  return rezult;
+};
+
+const getFeatures = () => {
+  const newArray = [];
+  const newArrayLength = getRandomPositiveInteger(1, TYPE_FEATURES.length);
+
+  for (let i = 1; i <= newArrayLength; i++) {
+    const options = TYPE_FEATURES.shift();
+    newArray.push(options);
   }
+  return newArray;
+};
+
+const getPhotos = () => {
+  const newArray = [];
+  for(let i = 0; i < getRandomArrayElement(TYPE_PHOTOS); i++) {
+    newArray.push(TYPE_PHOTOS[i]);
+  }
+  return newArray;
+};
+
+const getLat = () => {
+  getRandomPositiveFloat(35.65000,35.70000, 5);
+};
+
+const getLng = () => {
+  getRandomPositiveFloat(139.70000,139.80000, 5);
+};
+
+const author = () => ({
+  avatar: getAvatar(),
 });
 const location = () => ({
-  lat: getRandomPositiveFloat(35.65000,35.70000, 5),
-  lng: getRandomPositiveFloat(139.70000,139.80000, 5)
-
+  lat: getLat(),
+  lng: getLng(),
 });
 const offer = () => ({
   title : 'Random Zalovok',
@@ -70,26 +100,13 @@ const offer = () => ({
   guests: getRandomNumber(10),
   checkin: getRandomArrayElement(TIME_HOURS),
   checkout: getRandomArrayElement(TIME_HOURS),
-  features: function () {
-    const newArray = [];
-    const newArrayLength = getRandomPositiveInteger(1, TYPE_FEATURES.length);
-
-    for (let i = 1; i <= newArrayLength; i++) {
-      const options = TYPE_FEATURES.shift();
-      newArray.push(options);
-    }
-
-    return newArray;
-  },
+  features: getFeatures(),
   description: 'Random opisanie',
-  photos: function () {
-    const newArray = [];
-    for(let i = 0; i < getRandomArrayElement(TYPE_PHOTOS); i++) {
-      newArray.push(TYPE_PHOTOS[i]);
-    }
-    return newArray;
-  }
+  photos: getPhotos(),
 });
 
-const Author = Array.from({length: 10}, author);
-const Offer = Array.from({length: 10}, offer);
+const Ad = [
+  author, location,offer
+];
+
+const newAd = Array.from({length: NEW_AD}, Ad);
