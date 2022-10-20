@@ -72,7 +72,7 @@ const getFeatures = () => {
 
 const getPhotos = () => {
   const newArray = [];
-  for(let i = 0; i < getRandomNumber(TYPE_PHOTOS.length); i++) {;
+  for(let i = 0; i < getRandomNumber(TYPE_PHOTOS.length); i++) {
     newArray.push(TYPE_PHOTOS[i]);
   }
   return newArray;
