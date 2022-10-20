@@ -1,4 +1,3 @@
-const randomImageNumber = [];
 const TYPE_HOUSING = [
   'palace',
   'flat',
@@ -37,7 +36,7 @@ const getRandomPositiveInteger = (a, b) => {
   return Math.floor(result);
 };
 
-function getRandomPositiveFloat (a, b, digits = 1) {
+const getRandomPositiveFloat = (a, b, digits = 1) => {
   if (a < 0 || b < 0 || digits < 0) {
     return NaN;
   }
@@ -45,18 +44,20 @@ function getRandomPositiveFloat (a, b, digits = 1) {
   const upper = Math.max(a, b);
   const result = Math.random() * (upper - lower) + lower;
   return +result.toFixed(digits);
-}
+};
 
 const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
 const getRandomNumber = (element) => getRandomPositiveInteger(1, element);
 
+const randomImageNumber = [];
+
 const getAvatar = () => {
-  let RandomImage = getRandomNumber(10);
-  while(randomImageNumber.includes(RandomImage)) {
-    RandomImage = getRandomNumber(10);
+  let randomImage = getRandomNumber(10);
+  while(randomImageNumber.includes(randomImage)) {
+    randomImage = getRandomNumber(10);
   }
-  randomImageNumber.push(RandomImage);
-  return `img/avatars/user${String(RandomImage).padStart(2,0)}.png`;
+  randomImageNumber.push(randomImage);
+  return `img/avatars/user${String(randomImage).padStart(2,0)}.png`;
 };
 
 const getFeatures = () => {
@@ -71,11 +72,11 @@ const getFeatures = () => {
 };
 
 const getPhotos = () => {
-  const newArray = [];
+  const newPhotoArray = [];
   for(let i = 0; i < getRandomNumber(TYPE_PHOTOS.length); i++) {
-    newArray.push(TYPE_PHOTOS[i]);
+    newPhotoArray.push(TYPE_PHOTOS[i]);
   }
-  return newArray;
+  return newPhotoArray;
 };
 
 const author = () => ({
@@ -99,10 +100,10 @@ const offer = () => ({
   photos: getPhotos(),
 });
 
-const Ad = () => ({
+const getAd = () => ({
   author: author(),
   newLocation:newLocation(),
   offer: offer(),
 });
 
-const newAd = Array.from({length: NEW_AD}, Ad);
+const newAd = Array.from({length: NEW_AD}, getAd);
