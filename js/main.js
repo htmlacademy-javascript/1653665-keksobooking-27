@@ -1,4 +1,4 @@
-let randomImageNumber = [1,2,3,4,5,6,7,8,9,10];
+const randomImageNumber = [];
 const TYPE_HOUSING = [
   'palace',
   'flat',
@@ -51,10 +51,12 @@ const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0,
 const getRandomNumber = (element) => getRandomPositiveInteger(1, element);
 
 const getAvatar = () => {
-  const RandomImage = getRandomArrayElement(randomImageNumber);
-  randomImageNumber = randomImageNumber.filter((number) => number !== RandomImage);
-  const rezult = `img/avatars/user${String(RandomImage).padStart(2,'0')}.png`;
-  return rezult;
+  let RandomImage = getRandomNumber(10);
+  while(randomImageNumber.includes(RandomImage)) {
+    RandomImage = getRandomNumber(10);
+  }
+  randomImageNumber.push(RandomImage);
+  return `img/avatars/user${String(RandomImage).padStart(2,0)}.png`;
 };
 
 const getFeatures = () => {
@@ -70,30 +72,22 @@ const getFeatures = () => {
 
 const getPhotos = () => {
   const newArray = [];
-  for(let i = 0; i < getRandomArrayElement(TYPE_PHOTOS); i++) {
+  for(let i = 0; i < getRandomNumber(TYPE_PHOTOS.length); i++) {;
     newArray.push(TYPE_PHOTOS[i]);
   }
   return newArray;
 };
 
-const getLat = () => {
-  getRandomPositiveFloat(35.65000,35.70000, 5);
-};
-
-const getLng = () => {
-  getRandomPositiveFloat(139.70000,139.80000, 5);
-};
-
 const author = () => ({
   avatar: getAvatar(),
 });
-const location = () => ({
-  lat: getLat(),
-  lng: getLng(),
+const newLocation = () => ({
+  lat: getRandomPositiveFloat(35.65000,35.70000, 5),
+  lng: getRandomPositiveFloat(139.70000,139.80000, 5)
 });
 const offer = () => ({
   title : 'Random Zalovok',
-  address: `${location.lat}${location.lng}`,
+  address: `${newLocation().lat}''${newLocation().lng}`,
   price : getRandomNumber(1000),
   type: getRandomArrayElement(TYPE_HOUSING),
   rooms: getRandomNumber(5),
@@ -105,8 +99,10 @@ const offer = () => ({
   photos: getPhotos(),
 });
 
-const Ad = [
-  author, location,offer
-];
+const Ad = () => ({
+  author: author(),
+  newLocation:newLocation(),
+  offer: offer(),
+});
 
 const newAd = Array.from({length: NEW_AD}, Ad);
