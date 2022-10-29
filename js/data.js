@@ -68,7 +68,7 @@ const newLocation = () => ({
 });
 const offer = () => ({
   title : 'Random Zalovok',
-  address: `${newLocation().lat} ${newLocation().lng}`,
+  address: `${newLocation().lat},${newLocation().lng}`,
   price : getRandomNumber(1000),
   type: getRandomArrayElement(TYPE_HOUSING),
   rooms: getRandomNumber(5),
