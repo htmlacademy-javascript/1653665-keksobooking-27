@@ -1,4 +1,3 @@
-import {createAd} from './data.js';
-console.log(createAd);
-
+import './data.js';
+import './generate-markup.js';
 
