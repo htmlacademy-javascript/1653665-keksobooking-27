@@ -27,7 +27,6 @@ newAd.querySelector('.popup__text--capacity').textContent = `${moreAd.offer.room
 newAd.querySelector('.popup__text--time').textContent = `Заезд после ${moreAd.offer.checkin}, выезд до ${moreAd.offer.checkout}`;
 
 newAd.querySelector('.popup__description').textContent = moreAd.offer.description;
-newAd.querySelector('.popup__photo').remove();
 newAd.querySelector('.popup__avatar').src = moreAd.author.avatar;
 moreAd.offer.photos.forEach((photos) => {
   const photosContainer = document.createElement('img');
