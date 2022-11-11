@@ -13,9 +13,27 @@ const apartOption = {
   'palace': 10000
 };
 
+const apartType = {
+  'bungalow': 'Бунгало',
+  'flat': 'Квартира',
+  'hotel': 'Отель',
+  'house': 'Дом',
+  'palace': 'Дворец'
+};
+
 const adFormElement = document.querySelector('.ad-form');
 const typeApart = adFormElement.querySelector('[name="type"]');
+const priceElement = adFormElement.querySelector('[name="price"]');
+const timeIn = adFormElement.querySelector('#timein');
+const timeOut = adFormElement.querySelector('#timeout');
 
+timeIn.addEventListener('change', () => {
+  timeOut.value = timeIn.value;
+});
+
+timeOut.addEventListener('change', () => {
+  timeIn.value = timeOut.value;
+});
 
 const pristine = new Pristine(adFormElement, {
   classTo: 'ad-form__element',
@@ -34,14 +52,21 @@ pristine.addValidator(
 );
 
 
-const validatePrice = (price) => price >= apartOption[typeApart.value] && price <= 100000;
+const onSync = () => pristine.validate([priceElement, typeApart]);
+const onChangeProper = () => {
+  priceElement.placeholder = apartOption[typeApart.value];
+  priceElement.min = apartOption[typeApart.value];
+  onSync();
+};
 
+typeApart.addEventListener('change', onChangeProper);
 
-pristine.addValidator(
-  adFormElement.querySelector('#price'),
-  validatePrice,
-  `Минимальная цена ${apartOption[typeApart.value]} а максимальная 100 000 `
-);
+const validatePrice = () => priceElement.value >= apartOption[typeApart.value];
+const validatePriceFill = () => priceElement.value;
+const getPriceOptionErrorMessage = () => `Для типа "${apartType[typeApart.value]}" цена выше ${apartOption[typeApart.value]}`;
+
+pristine.addValidator(priceElement, validatePrice, getPriceOptionErrorMessage);
+pristine.addValidator(typeApart, validatePriceFill);
 
 const roomNumber = adFormElement.querySelector('[name ="rooms"]');
 const capacity = adFormElement.querySelector('[name="capacity"]');

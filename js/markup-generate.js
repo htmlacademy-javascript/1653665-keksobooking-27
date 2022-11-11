@@ -38,9 +38,9 @@ const mainPinIcon = L.icon({
 });
 
 const subPinIcon = L.icon({
-  iconUrl: './img/main-pin.svg',
+  iconUrl: './img/pin.svg',
   iconSize: [40,40],
-  iconAnchor:[26,40]
+  iconAnchor:[23,40]
 });
 
 const balloonTemplate = document.querySelector('#card').content.querySelector('.popup');
