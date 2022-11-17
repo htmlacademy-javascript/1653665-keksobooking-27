@@ -1,3 +1,5 @@
+import './slider.js';
+
 const roomsOption = {
   '1': ['1'],
   '2': ['1','2'],
@@ -21,11 +23,13 @@ const apartType = {
   'palace': 'Дворец'
 };
 
+const sliderElement = document.querySelector('.ad-form__slider');
 const adFormElement = document.querySelector('.ad-form');
 const typeApart = adFormElement.querySelector('[name="type"]');
 const priceElement = adFormElement.querySelector('[name="price"]');
 const timeIn = adFormElement.querySelector('#timein');
 const timeOut = adFormElement.querySelector('#timeout');
+
 
 timeIn.addEventListener('change', () => {
   timeOut.value = timeIn.value;
@@ -81,4 +85,32 @@ pristine.addValidator(capacity, validateRooms, getRoomsErorMessage);
 adFormElement.addEventListener('submit', (evt) => {
   evt.preventDefault();
   pristine.validate();
+});
+
+noUiSlider.create(sliderElement, {
+  range: {
+    min: 0,
+    max: 100000
+  },
+  start: 0,
+  step: 1,
+  connect: 'lower',
+  format: {
+    to: function (value) {
+      return value.toFixed();
+    },
+    from: function (value) {
+      return parseFloat(value);
+    }
+  },
+});
+
+sliderElement.noUiSlider.on('update', ()=> {
+  priceElement.value = sliderElement.noUiSlider.get();
+});
+
+priceElement.addEventListener('input', () => {
+  sliderElement.noUiSlider.updateOptions({
+    start: priceElement.value,
+  });
 });
