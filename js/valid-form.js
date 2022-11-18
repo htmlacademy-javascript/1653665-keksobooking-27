@@ -13,9 +13,29 @@ const apartOption = {
   'palace': 10000
 };
 
+const apartType = {
+  'bungalow': 'Бунгало',
+  'flat': 'Квартира',
+  'hotel': 'Отель',
+  'house': 'Дом',
+  'palace': 'Дворец'
+};
+
+const sliderElement = document.querySelector('.ad-form__slider');
 const adFormElement = document.querySelector('.ad-form');
 const typeApart = adFormElement.querySelector('[name="type"]');
+const priceElement = adFormElement.querySelector('[name="price"]');
+const timeIn = adFormElement.querySelector('#timein');
+const timeOut = adFormElement.querySelector('#timeout');
 
+
+timeIn.addEventListener('change', () => {
+  timeOut.value = timeIn.value;
+});
+
+timeOut.addEventListener('change', () => {
+  timeIn.value = timeOut.value;
+});
 
 const pristine = new Pristine(adFormElement, {
   classTo: 'ad-form__element',
@@ -34,14 +54,21 @@ pristine.addValidator(
 );
 
 
-const validatePrice = (price) => price >= apartOption[typeApart.value] && price <= 100000;
+const onSync = () => pristine.validate([priceElement, typeApart]);
+const onChangeProper = () => {
+  priceElement.placeholder = apartOption[typeApart.value];
+  priceElement.min = apartOption[typeApart.value];
+  onSync();
+};
 
+typeApart.addEventListener('change', onChangeProper);
 
-pristine.addValidator(
-  adFormElement.querySelector('#price'),
-  validatePrice,
-  `Минимальная цена ${apartOption[typeApart.value]} а максимальная 100 000 `
-);
+const validatePrice = () => priceElement.value >= apartOption[typeApart.value];
+const validatePriceFill = () => priceElement.value;
+const getPriceOptionErrorMessage = () => `Для типа "${apartType[typeApart.value]}" цена выше ${apartOption[typeApart.value]}`;
+
+pristine.addValidator(priceElement, validatePrice, getPriceOptionErrorMessage);
+pristine.addValidator(typeApart, validatePriceFill);
 
 const roomNumber = adFormElement.querySelector('[name ="rooms"]');
 const capacity = adFormElement.querySelector('[name="capacity"]');
@@ -56,4 +83,32 @@ pristine.addValidator(capacity, validateRooms, getRoomsErorMessage);
 adFormElement.addEventListener('submit', (evt) => {
   evt.preventDefault();
   pristine.validate();
+});
+
+noUiSlider.create(sliderElement, {
+  range: {
+    min: 0,
+    max: 100000
+  },
+  start: 0,
+  step: 1,
+  connect: 'lower',
+  format: {
+    to: function (value) {
+      return value.toFixed();
+    },
+    from: function (value) {
+      return parseFloat(value);
+    }
+  },
+});
+
+sliderElement.noUiSlider.on('update', ()=> {
+  priceElement.value = sliderElement.noUiSlider.get();
+});
+
+priceElement.addEventListener('input', () => {
+  sliderElement.noUiSlider.updateOptions({
+    start: priceElement.value,
+  });
 });

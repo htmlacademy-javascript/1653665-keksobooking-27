@@ -20,7 +20,6 @@ const TYPE_FEATURES = [
   'elevator',
   'conditioner'
 ];
-
 const TYPE_PHOTOS = [
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/duonguyen-8LrGtIxxa4w.jpg',
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/brandon-hoogenboom-SNxQGWxZQi0.jpg',
@@ -42,14 +41,15 @@ const getAvatar = () => {
 
 const getFeatures = () => {
   const newArray = [];
-  const newArrayLength = getRandomPositiveInteger(1, TYPE_FEATURES.length);
-
+  const cloneTypeFeature = TYPE_FEATURES.slice();
+  const newArrayLength = getRandomPositiveInteger(1, cloneTypeFeature.length);
   for (let i = 1; i <= newArrayLength; i++) {
-    const options = TYPE_FEATURES.shift();
+    const options = cloneTypeFeature.shift();
     newArray.push(options);
   }
   return newArray;
 };
+
 
 const getPhotos = () => {
   const newPhotoArray = [];
