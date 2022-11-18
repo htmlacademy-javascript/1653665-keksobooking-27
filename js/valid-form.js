@@ -5,7 +5,17 @@ const roomsOption = {
   '100': ['0']
 };
 
+const apartOption = {
+  'bungalow': 0,
+  'flat': 1000,
+  'hotel': 3000,
+  'house': 5000,
+  'palace': 10000
+};
+
 const adFormElement = document.querySelector('.ad-form');
+const typeApart = adFormElement.querySelector('[name="type"]');
+
 
 const pristine = new Pristine(adFormElement, {
   classTo: 'ad-form__element',
@@ -23,13 +33,14 @@ pristine.addValidator(
   'Заголовок от 30 до 100 символов'
 );
 
-const validatePrice = (price) => price >= 0 && price <= 100000;
+
+const validatePrice = (price) => price >= apartOption[typeApart.value] && price <= 100000;
 
 
 pristine.addValidator(
   adFormElement.querySelector('#price'),
   validatePrice,
-  'Максимальная цена 100 000'
+  `Минимальная цена ${apartOption[typeApart.value]} а максимальная 100 000 `
 );
 
 const roomNumber = adFormElement.querySelector('[name ="rooms"]');

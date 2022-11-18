@@ -20,4 +20,5 @@ const activeForm = () => {
 };
 
 unActiveForm();
-activeForm();
+
+export{activeForm};
