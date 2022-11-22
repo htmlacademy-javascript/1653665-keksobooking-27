@@ -1,3 +1,5 @@
+import {showSuccessMessage,showErrorMessage } from './message.js';
+import {setMainPinCoordinate,resetForm,setAddress} from './markup-generate.js';
 const roomsOption = {
   '1': ['1'],
   '2': ['1','2'],
@@ -21,12 +23,29 @@ const apartType = {
   'palace': 'Дворец'
 };
 
+
+const START_COORDINATE = {
+  lat: 35.681217,
+  lng: 139.753596
+};
+
 const sliderElement = document.querySelector('.ad-form__slider');
 const adFormElement = document.querySelector('.ad-form');
 const typeApart = adFormElement.querySelector('[name="type"]');
 const priceElement = adFormElement.querySelector('[name="price"]');
 const timeIn = adFormElement.querySelector('#timein');
 const timeOut = adFormElement.querySelector('#timeout');
+
+const resetCoordinate = () => {
+  setMainPinCoordinate(START_COORDINATE);
+  setAddress(START_COORDINATE);
+};
+
+const onSendDataSuccess = () => {
+  resetForm();
+  resetCoordinate();
+  showSuccessMessage();
+};
 
 
 timeIn.addEventListener('change', () => {
@@ -80,10 +99,23 @@ const getRoomsErorMessage = () => `Комната(ы) ${roomNumber.value} не �
 pristine.addValidator(roomNumber, validateRooms, getRoomsErorMessage);
 pristine.addValidator(capacity, validateRooms, getRoomsErorMessage);
 
+
 adFormElement.addEventListener('submit', (evt) => {
   evt.preventDefault();
-  pristine.validate();
+  const isValidate = pristine.validate();
+  if(isValidate){
+    const formData = new FormData(evt.target);
+
+    fetch(
+      'https://27.javascript.pages.academy/keksobooking',
+      {
+        method: 'POST',
+        body: formData,
+      },
+    ).then(onSendDataSuccess).catch(showErrorMessage);
+  }
 });
+
 
 noUiSlider.create(sliderElement, {
   range: {
@@ -112,3 +144,6 @@ priceElement.addEventListener('input', () => {
     start: priceElement.value,
   });
 });
+
+
+export {sliderElement,adFormElement};

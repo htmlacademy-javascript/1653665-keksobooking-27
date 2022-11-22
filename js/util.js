@@ -21,4 +21,24 @@ const getRandomPositiveFloat = (a, b, digits = 1) => {
 const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
 const getRandomNumber = (element) => getRandomPositiveInteger(1, element);
 
-export {getRandomPositiveInteger,getRandomPositiveFloat,getRandomArrayElement,getRandomNumber};
+const showAlert = (message) => {
+  const alert = document.createElement('div');
+  alert.style.position = 'absolute';
+  alert.style.zIndex = '1000';
+  alert.style.left = '0';
+  alert.style.right = '0';
+  alert.style.top = '10px';
+  alert.style.padding = '10px 3px';
+  alert.style.fontSize = '30px';
+  alert.style.textAlign = 'center';
+  alert.style.backgroundColor = 'red';
+  alert.style.borderRadius = '10%';
+  alert.textContent = message;
+  document.body.append(alert);
+
+  setTimeout(() => {
+    alert.remove();
+  }, 3000);
+};
+
+export {getRandomPositiveInteger,getRandomPositiveFloat,getRandomArrayElement,getRandomNumber, showAlert};

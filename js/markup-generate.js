@@ -1,7 +1,7 @@
 import{activeForm} from './status-form.js';
-import{createAd} from './data.js';
+import{sliderElement,adFormElement} from './valid-form.js';
 
-
+const mapFilter = document.querySelector('.map__filters');
 const adressInput = document.querySelector('#address');
 const resetButton = document.querySelector('[type="reset"]');
 const typeApart = {
@@ -29,6 +29,7 @@ L.tileLayer(
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
 ).addTo(map);
+
 
 const mainPinIcon = L.icon({
   iconUrl:'./img/main-pin.svg',
@@ -58,26 +59,30 @@ const createCustomPopup = (newAd) => {
   popupElement.querySelector('.popup__text--capacity').textContent = `${newAd.offer.rooms} комнаты для ${newAd.offer.guests} гостей`;
   popupElement.querySelector('.popup__text--time').textContent = `Заезд после ${newAd.offer.checkin}, выезд до ${newAd.offer.checkout}`;
   popupElement.querySelector('.popup__description').textContent = newAd.offer.description;
-  newAd.offer.photos.forEach((photos) => {
-    const photosContainer = document.createElement('img');
-    photosContainer.classList.add('popup__photo');
-    photosContainer.width = 45;
-    photosContainer.height = 40;
-    photosContainer.alt = 'Фотография жилья';
-    photosContainer.src = photos;
-    popupElement.querySelector('.popup__photos').append(photosContainer);
-  });
+  if(newAd.offer.photos) {
+    newAd.offer.photos.forEach((photos) => {
+      const photosContainer = document.createElement('img');
+      photosContainer.classList.add('popup__photo');
+      photosContainer.width = 45;
+      photosContainer.height = 40;
+      photosContainer.alt = 'Фотография жилья';
+      photosContainer.src = photos;
+      popupElement.querySelector('.popup__photos').append(photosContainer);
+    });
+  }
 
-  featureList.forEach((featureListItem) => {
-    const isNecessary = featureItems.some(
-      (featureItem) => featureListItem.classList.contains(`popup__feature--${featureItem}`),
-    );
-    if (!isNecessary) {
-      featureListItem.classList.add('hidden');
-    } else {
-      featureListItem.classList.remove('hidden');
-    }
-  });
+  if(newAd.offer.features) {
+    featureList.forEach((featureListItem) => {
+      const isNecessary = featureItems.some(
+        (featureItem) => featureListItem.classList.contains(`popup__feature--${featureItem}`),
+      );
+      if (!isNecessary) {
+        featureListItem.classList.add('hidden');
+      } else {
+        featureListItem.classList.remove('hidden');
+      }
+    });
+  }
   return popupElement;
 };
 
@@ -100,6 +105,28 @@ mainPinMarker.on('moveend', (evt) => {
   adressInput.value = `${coordinate.lat.toFixed(5)},${coordinate.lng.toFixed(5)}`;
 });
 
+const setMainPinCoordinate = ({lat,lng}) => {
+  mainPinMarker.setLatLng({
+    lat: lat,
+    lng: lng
+  });
+  map.setView({
+    lat: lat,
+    lng: lng
+  }, 12);
+};
+
+const resetForm = () => {
+  adFormElement.reset();
+  mapFilter.reset();
+  sliderElement.noUiSlider.set(0);
+  map.closePopup();
+};
+
+const setAddress = ({lat,lng}) => {
+  adressInput.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+};
+
 resetButton.addEventListener('click', () => {
   mainPinMarker.setLatLng({
     lat: 35.681217,
@@ -110,17 +137,22 @@ resetButton.addEventListener('click', () => {
     lat: 35.681217,
     lng: 139.753596
   }, 12);
+  resetForm();
 });
 
-createAd.forEach((ad) =>{
-  const subPinMarker = L.marker({
-    lat: ad.newLocation.lat,
-    lng: ad.newLocation.lng,
-  },
-  {
-    icon: subPinIcon,
+const renderingAds = (createAd) => {
+  createAd.forEach((ad) =>{
+    const subPinMarker = L.marker({
+      lat: ad.location.lat,
+      lng: ad.location.lng,
+    },
+    {
+      icon: subPinIcon,
+    });
+    subPinMarker
+      .addTo(map)
+      .bindPopup(createCustomPopup(ad));
   });
-  subPinMarker
-    .addTo(map)
-    .bindPopup(createCustomPopup(ad));
-});
+};
+
+export {renderingAds,setMainPinCoordinate,resetForm,setAddress};
