@@ -1,7 +1,8 @@
 import{activeForm} from './status-form.js';
 import{sliderElement,adFormElement} from './valid-form.js';
+import{getFilteredOffers} from './filter.js';
 
-const mapFilter = document.querySelector('.map__filters');
+const mapFilters = document.querySelector('.map__filters');
 const adressInput = document.querySelector('#address');
 const resetButton = document.querySelector('[type="reset"]');
 const typeApart = {
@@ -43,6 +44,7 @@ const subPinIcon = L.icon({
   iconSize: [40,40],
   iconAnchor:[23,40]
 });
+
 
 const balloonTemplate = document.querySelector('#card').content.querySelector('.popup');
 
@@ -118,7 +120,7 @@ const setMainPinCoordinate = ({lat,lng}) => {
 
 const resetForm = () => {
   adFormElement.reset();
-  mapFilter.reset();
+  mapFilters.reset();
   sliderElement.noUiSlider.set(0);
   map.closePopup();
 };
@@ -140,8 +142,10 @@ resetButton.addEventListener('click', () => {
   resetForm();
 });
 
+
+const markerGroup = L.layerGroup().addTo(map);
 const renderingAds = (createAd) => {
-  createAd.forEach((ad) =>{
+  createAd.slice().sort(getFilteredOffers).forEach((ad) =>{
     const subPinMarker = L.marker({
       lat: ad.location.lat,
       lng: ad.location.lng,
@@ -150,9 +154,10 @@ const renderingAds = (createAd) => {
       icon: subPinIcon,
     });
     subPinMarker
-      .addTo(map)
+      .addTo(markerGroup)
       .bindPopup(createCustomPopup(ad));
   });
 };
 
-export {renderingAds,setMainPinCoordinate,resetForm,setAddress};
+
+export {renderingAds,setMainPinCoordinate,resetForm,setAddress,};

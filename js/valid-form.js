@@ -29,12 +29,19 @@ const START_COORDINATE = {
   lng: 139.753596
 };
 
+const FILE_TYPES = ['gif','jpg','jpeg','png'];
+
 const sliderElement = document.querySelector('.ad-form__slider');
+const avatarElement = document.querySelector('#avatar');
+const avatarPreview = document.querySelector('.ad-form-header__preview');
+const fileElement = document.querySelector('#images');
+const filePreview = document.querySelector('.ad-form__photo');
 const adFormElement = document.querySelector('.ad-form');
 const typeApart = adFormElement.querySelector('[name="type"]');
 const priceElement = adFormElement.querySelector('[name="price"]');
 const timeIn = adFormElement.querySelector('#timein');
 const timeOut = adFormElement.querySelector('#timeout');
+
 
 const resetCoordinate = () => {
   setMainPinCoordinate(START_COORDINATE);
@@ -145,5 +152,31 @@ priceElement.addEventListener('input', () => {
   });
 });
 
+avatarElement.addEventListener('change', () =>{
+  const file = avatarElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if(matches) {
+    avatarPreview.src = URL.createObjectURL(file);
+  }
+});
+
+fileElement.addEventListener('change', () => {
+  const file = fileElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if(matches) {
+    filePreview.innerHTML = '';
+    const image = document.createElement('img');
+    image.src = URL.createObjectURL(file);
+    image.style.maxWidth = '100%';
+    image.style.height = 'auto';
+    filePreview.append(image);
+  }
+});
 
 export {sliderElement,adFormElement};
