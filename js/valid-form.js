@@ -29,12 +29,20 @@ const START_COORDINATE = {
   lng: 139.753596
 };
 
+const FILE_TYPES = ['gif','jpg','jpeg','png'];
+
 const sliderElement = document.querySelector('.ad-form__slider');
+const avatarElement = document.querySelector('#avatar');
+const avatarPreview = document.querySelector('.ad-form-header__preview');
+const avatarImage = document.querySelector('.ad-form-header__preview img');
+const fileElement = document.querySelector('#images');
+const filePreview = document.querySelector('.ad-form__photo');
 const adFormElement = document.querySelector('.ad-form');
 const typeApart = adFormElement.querySelector('[name="type"]');
 const priceElement = adFormElement.querySelector('[name="price"]');
 const timeIn = adFormElement.querySelector('#timein');
 const timeOut = adFormElement.querySelector('#timeout');
+
 
 const resetCoordinate = () => {
   setMainPinCoordinate(START_COORDINATE);
@@ -135,7 +143,7 @@ noUiSlider.create(sliderElement, {
   },
 });
 
-sliderElement.noUiSlider.on('update', ()=> {
+sliderElement.noUiSlider.on('update', () => {
   priceElement.value = sliderElement.noUiSlider.get();
 });
 
@@ -145,5 +153,38 @@ priceElement.addEventListener('input', () => {
   });
 });
 
+avatarElement.addEventListener('change', () =>{
+  const file = avatarElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if(matches) {
+    avatarImage.remove();
+    avatarPreview.innerHTML = '';
+    const image = document.createElement('img');
+    avatarPreview.style.padding = '0';
+    image.src = URL.createObjectURL(file);
+    image.style.width = '60px';
+    image.style.heing = '60px';
+    avatarPreview.append(image);
+  }
+});
+
+fileElement.addEventListener('change', () => {
+  const file = fileElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if(matches) {
+    filePreview.innerHTML = '';
+    const image = document.createElement('img');
+    image.src = URL.createObjectURL(file);
+    image.style.maxWidth = '100%';
+    image.style.height = 'auto';
+    filePreview.append(image);
+  }
+});
 
 export {sliderElement,adFormElement};
