@@ -147,7 +147,6 @@ sliderElement.noUiSlider.on('update', () => {
   priceElement.value = sliderElement.noUiSlider.get();
 });
 
-
 priceElement.addEventListener('input', () => {
   sliderElement.noUiSlider.updateOptions({
     start: priceElement.value,
