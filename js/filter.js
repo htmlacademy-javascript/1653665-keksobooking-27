@@ -1,84 +1,76 @@
-const OFFER_COUNTS = 10;
-const Price = {
-  MIDDLE: 10000,
-  HIGHT: 50000
+const priceOption = {
+  middle: 0,
+  low: 10000,
+  high: 50000,
 };
+const mapFiltersElement = document.querySelector('.map__filters');
+const typeFilterElement = mapFiltersElement.querySelector('[name="housing-type"]');
+const priceFilterElement = mapFiltersElement.querySelector('[name="housing-price"]');
+const roomsFilterElement = mapFiltersElement.querySelector('[name="housing-rooms"]');
+const guestsFilterElement = mapFiltersElement.querySelector('[name="housing-guests"]');
+const featuresFilterArrays = [];
+const featuresCheckboxes = mapFiltersElement.querySelectorAll('input[type=checkbox]');
 
-const filterElement = document.querySelector('.map__filters');
-const housingTypeField = filterElement.querySelector('#housing-type');
-const housingPriceField = filterElement.querySelector('#housing-price');
-const housingRoomsField = filterElement.querySelector('#housing-rooms');
-const housingGuestsField = filterElement.querySelector('#housing-guests');
-const featureCheckboxes = filterElement.querySelectorAll('.map__feature');
+const checkTypeFilter = (offer) =>
+  offer.type === typeFilterElement.value || typeFilterElement.value === 'any';
 
-const offers = [];
-
-const filterByType = (offer, type) => type === 'any' || offer.offer.type === type;
-
-const filterByPrice = (offer, price) => {
-  switch(price) {
+const checkPriceFilter = (offer) => {
+  const priceAdvert = offer.price;
+  const priceLow = priceOption['low'];
+  const priceHight = priceOption['high'];
+  switch (priceFilterElement.value) {
+    case 'low':
+      return priceAdvert < priceLow;
+    case 'high':
+      return priceAdvert > priceHight;
+    case 'middle':
+      //проверяем, что цена между значениями low и high
+      return priceAdvert <= priceHight && priceAdvert >= priceLow;
     case 'any':
       return true;
-    case 'low':
-      return offer.offer.price < Price.MIDDLE;
-    case 'middle':
-      return (offer.offer.price < Price.HIGHT && offer.offer.price > Price.MIDDLE);
-    case 'hight':
-      return offer.offer.price >= Price.HIGHT;
   }
 };
 
-const filterByRooms = (offer, rooms) => rooms === 'any' || offer.offer.rooms === Number(rooms);
+const checkRoomsFilter = (offer) =>
+  offer.rooms === Number(roomsFilterElement.value) || roomsFilterElement.value === 'any';
 
-const filterByGuests = (offer, guests) => guests === 'any' || offer.offer.guests === Number(guests);
+const checkGuestsFilter = (offer) =>
+  offer.guests === Number(guestsFilterElement.value) || guestsFilterElement.value === 'any';
 
-const filterByFeatures = (offer, features) => {
-  if(!features.length) {
+const checkFeaturesFilter = (offer) => {
+  //Если есть выбранные checkbox, то проверяем, что в обявлениях есть такие же
+  if (featuresFilterArrays.length > 0 && offer.features) {
+    let featuresCount = 0;
+    featuresFilterArrays.forEach((el) => {
+      if (offer.features.includes(el)) {
+        featuresCount += 1; //если элемент в массиве есть, то увеличиваем счетчик featuresCount
+      }
+    });
+    /*увеличиваем счетчик sameAdvert в том случае если колв-во совпадений (счетчик featuresCount)
+    такое же как и кол-во выбранных удобств*/
+    return featuresCount === featuresFilterArrays.length;
+  }
+  //если удобства не выбраны, то ничего не проверяем, считаем, что все объявления удовлетворяют данному условию
+  if (featuresFilterArrays.length === 0) {
     return true;
   }
-
-  if(!offer.offer.features) {
-    return false;
-  }
-
-  return features.every((feature) => offer.offer.features.includes(feature));
 };
 
-const getFilteredOffers = () => {
-  const selectedType = housingTypeField.value;
-  const selectedPrice = housingPriceField.value;
-  const selectedRooms = housingRoomsField.value;
-  const selectedGuests = housingGuestsField.value;
+//объявление должно удовлетворять всем фильтрам
+const getAdvertFilter = (advert) =>
+  checkTypeFilter(advert.offer) &&
+  checkPriceFilter(advert.offer) &&
+  checkRoomsFilter(advert.offer) &&
+  checkGuestsFilter(advert.offer) &&
+  checkFeaturesFilter(advert.offer);
 
-  const selectedFeatures = [];
-  featureCheckboxes.forEach((checkbox) => {
-    if(checkbox.checked) {
-      selectedFeatures.push(checkbox.value);
-    }
-  });
-
-  const filteredOffers = [];
-  for(const offer of offers) {
-    if(filteredOffers.length >= OFFER_COUNTS) {
-      break;
-    }
-    if(
-      filterByType(offer, selectedType) &&
-      filterByPrice(offer, selectedPrice) &&
-      filterByRooms(offer, selectedRooms) &&
-      filterByGuests(offer, selectedGuests) &&
-      filterByFeatures(offer, selectedFeatures)
-    ) {
-      filteredOffers.push(offer);
-    }
-  }
-
-  return filteredOffers;
+export {
+  mapFiltersElement,
+  typeFilterElement,
+  priceFilterElement,
+  roomsFilterElement,
+  guestsFilterElement,
+  featuresCheckboxes,
+  featuresFilterArrays,
+  getAdvertFilter,
 };
-
-const setOnFilterChange = (cb) => {
-  filterElement.addEventListener('change', () => cb());
-};
-
-export{setOnFilterChange,getFilteredOffers};
-

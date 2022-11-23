@@ -34,6 +34,7 @@ const FILE_TYPES = ['gif','jpg','jpeg','png'];
 const sliderElement = document.querySelector('.ad-form__slider');
 const avatarElement = document.querySelector('#avatar');
 const avatarPreview = document.querySelector('.ad-form-header__preview');
+const avatarImage = document.querySelector('.ad-form-header__preview img');
 const fileElement = document.querySelector('#images');
 const filePreview = document.querySelector('.ad-form__photo');
 const adFormElement = document.querySelector('.ad-form');
@@ -142,9 +143,10 @@ noUiSlider.create(sliderElement, {
   },
 });
 
-sliderElement.noUiSlider.on('update', ()=> {
+sliderElement.noUiSlider.on('update', () => {
   priceElement.value = sliderElement.noUiSlider.get();
 });
+
 
 priceElement.addEventListener('input', () => {
   sliderElement.noUiSlider.updateOptions({
@@ -159,7 +161,14 @@ avatarElement.addEventListener('change', () =>{
   const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
 
   if(matches) {
-    avatarPreview.src = URL.createObjectURL(file);
+    avatarImage.remove();
+    avatarPreview.innerHTML = '';
+    const image = document.createElement('img');
+    avatarPreview.style.padding = '0';
+    image.src = URL.createObjectURL(file);
+    image.style.width = '60px';
+    image.style.heing = '60px';
+    avatarPreview.append(image);
   }
 });
 

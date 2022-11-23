@@ -14,7 +14,6 @@ const generateMarkup = document.querySelector('#card').content.querySelector('.p
 
 const moreAd = createAd[0];
 
-
 const newAd = generateMarkup.cloneNode(true);
 const featureList = newAd.querySelectorAll('.popup__feature');
 const featureItems = moreAd.offer.features;

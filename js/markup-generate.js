@@ -1,7 +1,24 @@
 import{activeForm} from './status-form.js';
 import{sliderElement,adFormElement} from './valid-form.js';
-import{getFilteredOffers} from './filter.js';
+import{
+  getAdvertFilter,
+  typeFilterElement,
+  priceFilterElement,
+  roomsFilterElement,
+  guestsFilterElement,
+  featuresCheckboxes,
+  featuresFilterArrays
+} from './filter.js';
+import{state} from './data.js';
+import{debounce} from './util.js';
 
+const ADVERTS_COUNT = 10;
+const RERENDER_DELAY = 500;
+const MAP_ZOOM = 12;
+const locationTokyo = {
+  lat: 35.6895,
+  lng: 139.692,
+};
 const mapFilters = document.querySelector('.map__filters');
 const adressInput = document.querySelector('#address');
 const resetButton = document.querySelector('[type="reset"]');
@@ -13,7 +30,6 @@ const typeApart = {
   hotel: 'Отель',
 
 };
-
 
 const map = L.map('map-canvas')
   .on('load', () => {
@@ -90,10 +106,7 @@ const createCustomPopup = (newAd) => {
 
 
 const mainPinMarker = L.marker(
-  {
-    lat: 35.681217,
-    lng: 139.753596
-  },
+  locationTokyo,
   {
     draggable: true,
     icon: mainPinIcon,
@@ -115,7 +128,76 @@ const setMainPinCoordinate = ({lat,lng}) => {
   map.setView({
     lat: lat,
     lng: lng
-  }, 12);
+  }, MAP_ZOOM);
+};
+
+const setAddress = ({lat,lng}) => {
+  adressInput.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+};
+
+const markerGroup = L.layerGroup().addTo(map);
+
+const createMarker = () => {
+  const filterAdverts = [];
+  for (const advert of state.adverts) {
+    if (filterAdverts.length >= ADVERTS_COUNT) {
+      break;
+    }
+
+    if (getAdvertFilter(advert)) {
+      filterAdverts.push(advert);
+    }
+  }
+
+  filterAdverts.forEach(({ location, offer, author }) => {
+    const marker = L.marker(
+      {
+        lat: location.lat,
+        lng: location.lng,
+      },
+      {
+        icon: subPinIcon,
+      },
+    );
+    marker.addTo(markerGroup).bindPopup(createCustomPopup({ offer, author }));
+  });
+};
+
+const createMarkerWithDebounce = debounce(() => createMarker(state.adverts), RERENDER_DELAY);
+
+const updateMapMarker = () => {
+  markerGroup.clearLayers();
+  createMarkerWithDebounce();
+};
+
+//сброс карты
+const updateMap = () => {
+  mainPinMarker.setLatLng(locationTokyo);
+  map.setView(locationTokyo, MAP_ZOOM);
+  updateMapMarker();
+};
+
+const setAddressDefault = () =>
+  (adressInput.value = `${locationTokyo.lat}, ${locationTokyo.lng}`);
+
+typeFilterElement.addEventListener('change', updateMapMarker);
+priceFilterElement.addEventListener('change', updateMapMarker);
+roomsFilterElement.addEventListener('change', updateMapMarker);
+guestsFilterElement.addEventListener('change', updateMapMarker);
+featuresCheckboxes.forEach((item) =>
+  item.addEventListener('change', () => {
+    if (item.checked) {
+      featuresFilterArrays.push(item.value);
+    } else {
+      featuresFilterArrays.splice(featuresFilterArrays.indexOf(item.value, 0), 1);
+    }
+    updateMapMarker();
+  }),
+);
+
+const restMarkers = () => {
+  setAddressDefault();
+  updateMap();
 };
 
 const resetForm = () => {
@@ -123,41 +205,12 @@ const resetForm = () => {
   mapFilters.reset();
   sliderElement.noUiSlider.set(0);
   map.closePopup();
-};
-
-const setAddress = ({lat,lng}) => {
-  adressInput.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  restMarkers();
 };
 
 resetButton.addEventListener('click', () => {
-  mainPinMarker.setLatLng({
-    lat: 35.681217,
-    lng: 139.753596
-  });
-
-  map.setView({
-    lat: 35.681217,
-    lng: 139.753596
-  }, 12);
   resetForm();
 });
 
 
-const markerGroup = L.layerGroup().addTo(map);
-const renderingAds = (createAd) => {
-  createAd.slice().sort(getFilteredOffers).forEach((ad) =>{
-    const subPinMarker = L.marker({
-      lat: ad.location.lat,
-      lng: ad.location.lng,
-    },
-    {
-      icon: subPinIcon,
-    });
-    subPinMarker
-      .addTo(markerGroup)
-      .bindPopup(createCustomPopup(ad));
-  });
-};
-
-
-export {renderingAds,setMainPinCoordinate,resetForm,setAddress,};
+export {setMainPinCoordinate,resetForm,setAddress, createMarker};
