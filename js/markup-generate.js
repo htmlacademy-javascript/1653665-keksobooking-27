@@ -15,7 +15,7 @@ import{debounce} from './util.js';
 const ADVERTS_COUNT = 10;
 const RERENDER_DELAY = 500;
 const MAP_ZOOM = 12;
-const locationTokyo = {
+const LOCATION_TOKYO = {
   lat: 35.6895,
   lng: 139.692,
 };
@@ -37,8 +37,8 @@ const map = L.map('map-canvas')
     activeForm();
   })
   .setView({
-    lat: locationTokyo.lat,
-    lng : locationTokyo.lng
+    lat: LOCATION_TOKYO.lat,
+    lng : LOCATION_TOKYO.lng
   }, MAP_ZOOM);
 
 L.tileLayer(
@@ -109,7 +109,7 @@ const createCustomPopup = (newAd) => {
 
 
 const mainPinMarker = L.marker(
-  locationTokyo,
+  LOCATION_TOKYO,
   {
     draggable: true,
     icon: mainPinIcon,
@@ -176,13 +176,13 @@ const onUpdateMapMarker = () => {
 
 //сброс карты
 const updateMap = () => {
-  mainPinMarker.setLatLng(locationTokyo);
-  map.setView(locationTokyo, MAP_ZOOM);
+  mainPinMarker.setLatLng(LOCATION_TOKYO);
+  map.setView(LOCATION_TOKYO, MAP_ZOOM);
   onUpdateMapMarker();
 };
 
 const setAddressDefault = () =>
-  (adressInput.value = `${locationTokyo.lat}, ${locationTokyo.lng}`);
+  (adressInput.value = `${LOCATION_TOKYO.lat}, ${LOCATION_TOKYO.lng}`);
 
 typeFilterElement.addEventListener('change', onUpdateMapMarker);
 priceFilterElement.addEventListener('change', onUpdateMapMarker);

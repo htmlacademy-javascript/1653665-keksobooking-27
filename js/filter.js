@@ -1,4 +1,4 @@
-const priceOption = {
+const PRICE_OPTION = {
   middle: 0,
   low: 10000,
   high: 50000,
@@ -16,8 +16,8 @@ const checkTypeFilter = (offer) =>
 
 const checkPriceFilter = (offer) => {
   const priceAdvert = offer.price;
-  const priceLow = priceOption['low'];
-  const priceHight = priceOption['high'];
+  const priceLow = PRICE_OPTION['low'];
+  const priceHight = PRICE_OPTION['high'];
   switch (priceFilterElement.value) {
     case 'low':
       return priceAdvert < priceLow;

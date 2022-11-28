@@ -1,13 +1,13 @@
 import {showSuccessMessage,showErrorMessage } from './message.js';
 import {setMainPinCoordinate,resetForm,setAddress} from './markup-generate.js';
-const roomsOption = {
+const ROOMS_OPTION = {
   '1': ['1'],
   '2': ['1','2'],
   '3': ['1','2','3'],
   '100': ['0']
 };
 
-const apartOption = {
+const APART_OPTION = {
   'bungalow': 0,
   'flat': 1000,
   'hotel': 3000,
@@ -15,7 +15,7 @@ const apartOption = {
   'palace': 10000
 };
 
-const apartType = {
+const APART_TYPE = {
   'bungalow': 'Бунгало',
   'flat': 'Квартира',
   'hotel': 'Отель',
@@ -29,9 +29,9 @@ const START_COORDINATE = {
   lng: 139.692
 };
 
-const minLengthName = 30;
-const maxLengthName = 100;
-const maxPrice = 100000;
+const MIN_LENGTH_NAME = 30;
+const MAX_LENGTH_NAME = 100;
+const MAX_PRICE = 100000;
 
 const FILE_TYPES = ['gif','jpg','jpeg','png'];
 
@@ -80,7 +80,7 @@ const pristine = new Pristine(adFormElement, {
 true,
 );
 
-const validateHeading = (value) => value.length >= minLengthName && value.length <= maxLengthName;
+const validateHeading = (value) => value.length >= MIN_LENGTH_NAME && value.length <= MAX_LENGTH_NAME;
 
 pristine.addValidator(
   adFormElement.querySelector('#title'),
@@ -91,22 +91,22 @@ pristine.addValidator(
 
 const onSync = () => pristine.validate([priceElement, typeApart]);
 const onChangeProper = () => {
-  priceElement.placeholder = apartOption[typeApart.value];
-  priceElement.min = apartOption[typeApart.value];
+  priceElement.placeholder = APART_OPTION[typeApart.value];
+  priceElement.min = APART_OPTION[typeApart.value];
   onSync();
 };
 
 typeApart.addEventListener('change', onChangeProper);
 
-const validatePrice = () => priceElement.value >= apartOption[typeApart.value];
+const validatePrice = () => priceElement.value >= APART_OPTION[typeApart.value];
 const validatePriceFill = () => priceElement.value;
-const getPriceOptionErrorMessage = () => `Для типа "${apartType[typeApart.value]}" цена выше ${apartOption[typeApart.value]}`;
+const getPriceOptionErrorMessage = () => `Для типа "${APART_TYPE[typeApart.value]}" цена выше ${APART_OPTION[typeApart.value]}`;
 
 pristine.addValidator(priceElement, validatePrice, getPriceOptionErrorMessage);
 pristine.addValidator(typeApart, validatePriceFill);
 
 
-const validateRooms = () => roomsOption[roomNumber.value].includes(capacity.value);
+const validateRooms = () => ROOMS_OPTION[roomNumber.value].includes(capacity.value);
 
 const getRoomsErorMessage = () => `Комната(ы) ${roomNumber.value} не предназначен(ы) для ${capacity.value}`;
 
@@ -134,7 +134,7 @@ adFormElement.addEventListener('submit', (evt) => {
 noUiSlider.create(sliderElement, {
   range: {
     min: 0,
-    max: maxPrice,
+    max: MAX_PRICE,
   },
   start: 0,
   step: 1,

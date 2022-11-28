@@ -1,5 +1,5 @@
-const timeInshowAlert = 3000;
-const timeInDebounce = 500;
+const TIME_IN_SHOW_ALERT = 3000;
+const TIME_IN_DEBOUNCE = 500;
 const showAlert = (message) => {
   const alert = document.createElement('div');
   alert.style.position = 'absolute';
@@ -17,11 +17,11 @@ const showAlert = (message) => {
 
   setTimeout(() => {
     alert.remove();
-  }, timeInshowAlert);
+  }, TIME_IN_SHOW_ALERT);
 };
 
 // Источник - https://www.freecodecamp.org/news/javascript-debounce-example
-const debounce = (callback, timeoutDelay = timeInDebounce) => {
+const debounce = (callback, timeoutDelay = TIME_IN_DEBOUNCE) => {
   let timeoutId;
   return (...rest) => {
     clearTimeout(timeoutId);
