@@ -11,10 +11,12 @@ fetch('https://27.javascript.pages.academy/keksobooking/data')
     if(response.ok) {
       activeFilter();
       return response.json();
+    } else {
+      showAlert('Не удалось загрузить фотографии других пользователей');
     }
   }).then((adverts) => {
 
     setAdverts(adverts);
     createMarker();
-  }).catch(showAlert.message);
+  }).catch(() => showAlert('Не удалось загрузить фотографии других пользователей'));
 
