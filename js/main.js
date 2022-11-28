@@ -7,11 +7,9 @@ import { setAdverts } from './data.js';
 
 
 fetch('https://27.javascript.pages.academy/keksobooking/data')
-  .then((response) => {
-
- if(response.ok) {
+  .then((response) => {if(response.ok) {
     activeFilter();
-    response.json()
+    response.json();
   }
   }).then((adverts) => {
     setAdverts(adverts);
