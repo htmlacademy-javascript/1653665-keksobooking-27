@@ -1,3 +1,5 @@
+import {showSuccessMessage,showErrorMessage } from './message.js';
+import {setMainPinCoordinate,resetForm,setAddress} from './markup-generate.js';
 const roomsOption = {
   '1': ['1'],
   '2': ['1','2'],
@@ -21,12 +23,46 @@ const apartType = {
   'palace': 'Дворец'
 };
 
+
+const START_COORDINATE = {
+  lat: 35.6895,
+  lng: 139.692
+};
+
+const minLengthName = 30;
+const maxLengthName = 100;
+const maxPrice = 100000;
+
+const FILE_TYPES = ['gif','jpg','jpeg','png'];
+
+const addressInServer = 'https://27.javascript.pages.academy/keksobooking';
+
 const sliderElement = document.querySelector('.ad-form__slider');
+const avatarElement = document.querySelector('#avatar');
+const avatarPreview = document.querySelector('.ad-form-header__preview');
+const avatarImage = document.querySelector('.ad-form-header__preview img');
+const fileElement = document.querySelector('#images');
+const filePreview = document.querySelector('.ad-form__photo');
 const adFormElement = document.querySelector('.ad-form');
 const typeApart = adFormElement.querySelector('[name="type"]');
 const priceElement = adFormElement.querySelector('[name="price"]');
 const timeIn = adFormElement.querySelector('#timein');
 const timeOut = adFormElement.querySelector('#timeout');
+const roomNumber = adFormElement.querySelector('[name ="rooms"]');
+const capacity = adFormElement.querySelector('[name="capacity"]');
+
+
+
+const resetCoordinate = () => {
+  setMainPinCoordinate(START_COORDINATE);
+  setAddress(START_COORDINATE);
+};
+
+const onSendDataSuccess = () => {
+  resetForm();
+  resetCoordinate();
+  showSuccessMessage();
+};
 
 
 timeIn.addEventListener('change', () => {
@@ -45,7 +81,7 @@ const pristine = new Pristine(adFormElement, {
 true,
 );
 
-const validateHeading = (value) => value.length >= 30 && value.length <= 100;
+const validateHeading = (value) => value.length >= minLengthName && value.length <= maxLengthName;
 
 pristine.addValidator(
   adFormElement.querySelector('#title'),
@@ -70,8 +106,6 @@ const getPriceOptionErrorMessage = () => `Для типа "${apartType[typeApart
 pristine.addValidator(priceElement, validatePrice, getPriceOptionErrorMessage);
 pristine.addValidator(typeApart, validatePriceFill);
 
-const roomNumber = adFormElement.querySelector('[name ="rooms"]');
-const capacity = adFormElement.querySelector('[name="capacity"]');
 
 const validateRooms = () => roomsOption[roomNumber.value].includes(capacity.value);
 
@@ -80,15 +114,28 @@ const getRoomsErorMessage = () => `Комната(ы) ${roomNumber.value} не �
 pristine.addValidator(roomNumber, validateRooms, getRoomsErorMessage);
 pristine.addValidator(capacity, validateRooms, getRoomsErorMessage);
 
+
 adFormElement.addEventListener('submit', (evt) => {
   evt.preventDefault();
-  pristine.validate();
+  const isValidate = pristine.validate();
+  if(isValidate){
+    const formData = new FormData(evt.target);
+
+    fetch(
+      addressInServer,
+      {
+        method: 'POST',
+        body: formData,
+      },
+    ).then(onSendDataSuccess).catch(showErrorMessage);
+  }
 });
+
 
 noUiSlider.create(sliderElement, {
   range: {
     min: 0,
-    max: 100000
+    max: maxPrice,
   },
   start: 0,
   step: 1,
@@ -103,7 +150,7 @@ noUiSlider.create(sliderElement, {
   },
 });
 
-sliderElement.noUiSlider.on('update', ()=> {
+sliderElement.noUiSlider.on('update', () => {
   priceElement.value = sliderElement.noUiSlider.get();
 });
 
@@ -112,3 +159,50 @@ priceElement.addEventListener('input', () => {
     start: priceElement.value,
   });
 });
+
+avatarElement.addEventListener('change', () =>{
+  const file = avatarElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if(matches) {
+    avatarImage.remove();
+    avatarPreview.innerHTML = '';
+    const image = document.createElement('img');
+    avatarPreview.style.padding = '0';
+    image.src = URL.createObjectURL(file);
+    image.style.width = '60px';
+    image.style.heing = '60px';
+    avatarPreview.append(image);
+  }
+});
+
+
+fileElement.addEventListener('change', () => {
+  const file = fileElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if(matches) {
+    const image = document.createElement('img');
+    image.src = URL.createObjectURL(file);
+    image.style.maxWidth = '100%';
+    image.style.height = 'auto';
+    filePreview.append(image);
+  }
+});
+
+const returnImg = () => {
+  avatarPreview.innerHTML = '';
+  filePreview.innerHTML = '';
+  const image = document.createElement('img');
+  avatarPreview.style.padding = '0 15px';
+  image.src = './img/muffin-grey.svg';
+  image.style.width = '40px';
+  image.style.heing = '40px';
+  avatarPreview.append(image);
+};
+
+export {sliderElement,adFormElement,returnImg};

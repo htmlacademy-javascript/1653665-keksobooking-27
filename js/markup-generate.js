@@ -1,9 +1,29 @@
 import{activeForm} from './status-form.js';
-import{createAd} from './data.js';
+import{sliderElement,adFormElement,returnImg} from './valid-form.js';
+import{
+  getAdvertFilter,
+  typeFilterElement,
+  priceFilterElement,
+  roomsFilterElement,
+  guestsFilterElement,
+  featuresCheckboxes,
+  featuresFilterArrays
+} from './filter.js';
+import{state} from './data.js';
+import{debounce} from './util.js';
 
-
+const ADVERTS_COUNT = 10;
+const RERENDER_DELAY = 500;
+const MAP_ZOOM = 12;
+const locationTokyo = {
+  lat: 35.6895,
+  lng: 139.692,
+};
+const mapFilters = document.querySelector('.map__filters');
 const adressInput = document.querySelector('#address');
 const resetButton = document.querySelector('[type="reset"]');
+const filePreview = document.querySelector('.ad-form__photo');
+const avatarPreview = document.querySelector('.ad-form-header__preview');
 const typeApart = {
   flat: 'Квартира',
   bungalow: 'Бунгало',
@@ -13,15 +33,14 @@ const typeApart = {
 
 };
 
-
 const map = L.map('map-canvas')
   .on('load', () => {
     activeForm();
   })
   .setView({
-    lat: 35.681217,
-    lng : 139.753596
-  }, 12);
+    lat: locationTokyo.lat,
+    lng : locationTokyo.lng
+  }, MAP_ZOOM);
 
 L.tileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -29,6 +48,7 @@ L.tileLayer(
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
 ).addTo(map);
+
 
 const mainPinIcon = L.icon({
   iconUrl:'./img/main-pin.svg',
@@ -42,6 +62,7 @@ const subPinIcon = L.icon({
   iconSize: [40,40],
   iconAnchor:[23,40]
 });
+
 
 const balloonTemplate = document.querySelector('#card').content.querySelector('.popup');
 
@@ -58,35 +79,38 @@ const createCustomPopup = (newAd) => {
   popupElement.querySelector('.popup__text--capacity').textContent = `${newAd.offer.rooms} комнаты для ${newAd.offer.guests} гостей`;
   popupElement.querySelector('.popup__text--time').textContent = `Заезд после ${newAd.offer.checkin}, выезд до ${newAd.offer.checkout}`;
   popupElement.querySelector('.popup__description').textContent = newAd.offer.description;
-  newAd.offer.photos.forEach((photos) => {
-    const photosContainer = document.createElement('img');
-    photosContainer.classList.add('popup__photo');
-    photosContainer.width = 45;
-    photosContainer.height = 40;
-    photosContainer.alt = 'Фотография жилья';
-    photosContainer.src = photos;
-    popupElement.querySelector('.popup__photos').append(photosContainer);
-  });
+  if(newAd.offer.photos) {
+    const fragment = document.createDocumentFragment();
+    newAd.offer.photos.forEach((photos) => {
+      const photosContainer = document.createElement('img');
+      photosContainer.classList.add('popup__photo');
+      photosContainer.width = 45;
+      photosContainer.height = 40;
+      photosContainer.alt = 'Фотография жилья';
+      photosContainer.src = photos;
+      fragment.append(photosContainer);
+    });
+    popupElement.querySelector('.popup__photos').append(fragment);
+  }
 
-  featureList.forEach((featureListItem) => {
-    const isNecessary = featureItems.some(
-      (featureItem) => featureListItem.classList.contains(`popup__feature--${featureItem}`),
-    );
-    if (!isNecessary) {
-      featureListItem.classList.add('hidden');
-    } else {
-      featureListItem.classList.remove('hidden');
-    }
-  });
+  if(newAd.offer.features) {
+    featureList.forEach((featureListItem) => {
+      const isNecessary = featureItems.some(
+        (featureItem) => featureListItem.classList.contains(`popup__feature--${featureItem}`),
+      );
+      if (!isNecessary) {
+        featureListItem.classList.add('hidden');
+      } else {
+        featureListItem.classList.remove('hidden');
+      }
+    });
+  }
   return popupElement;
 };
 
 
 const mainPinMarker = L.marker(
-  {
-    lat: 35.681217,
-    lng: 139.753596
-  },
+  locationTokyo,
   {
     draggable: true,
     icon: mainPinIcon,
@@ -100,27 +124,98 @@ mainPinMarker.on('moveend', (evt) => {
   adressInput.value = `${coordinate.lat.toFixed(5)},${coordinate.lng.toFixed(5)}`;
 });
 
-resetButton.addEventListener('click', () => {
+const setMainPinCoordinate = ({lat,lng}) => {
   mainPinMarker.setLatLng({
-    lat: 35.681217,
-    lng: 139.753596
+    lat: lat,
+    lng: lng
   });
-
   map.setView({
-    lat: 35.681217,
-    lng: 139.753596
-  }, 12);
+    lat: lat,
+    lng: lng
+  }, MAP_ZOOM);
+};
+
+const setAddress = ({lat,lng}) => {
+  adressInput.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+};
+
+const markerGroup = L.layerGroup().addTo(map);
+
+const createMarker = () => {
+  const filterAdverts = [];
+  for (const advert of state.adverts) {
+    if (filterAdverts.length >= ADVERTS_COUNT) {
+      break;
+    }
+
+    if (getAdvertFilter(advert)) {
+      filterAdverts.push(advert);
+    }
+  }
+
+  filterAdverts.forEach(({ location, offer, author }) => {
+    const marker = L.marker(
+      {
+        lat: location.lat,
+        lng: location.lng,
+      },
+      {
+        icon: subPinIcon,
+      },
+    );
+    marker.addTo(markerGroup).bindPopup(createCustomPopup({ offer, author }));
+  });
+};
+
+const createMarkerWithDebounce = debounce(() => createMarker(state.adverts), RERENDER_DELAY);
+
+const onUpdateMapMarker = () => {
+  markerGroup.clearLayers();
+  createMarkerWithDebounce();
+};
+
+//сброс карты
+const updateMap = () => {
+  mainPinMarker.setLatLng(locationTokyo);
+  map.setView(locationTokyo, MAP_ZOOM);
+  onUpdateMapMarker();
+};
+
+const setAddressDefault = () =>
+  (adressInput.value = `${locationTokyo.lat}, ${locationTokyo.lng}`);
+
+typeFilterElement.addEventListener('change', onUpdateMapMarker);
+priceFilterElement.addEventListener('change', onUpdateMapMarker);
+roomsFilterElement.addEventListener('change', onUpdateMapMarker);
+guestsFilterElement.addEventListener('change', onUpdateMapMarker);
+featuresCheckboxes.forEach((item) =>
+  item.addEventListener('change', () => {
+    if (item.checked) {
+      featuresFilterArrays.push(item.value);
+    } else {
+      featuresFilterArrays.splice(featuresFilterArrays.indexOf(item.value, 0), 1);
+    }
+    onUpdateMapMarker();
+  }),
+);
+
+const restMarkers = () => {
+  setAddressDefault();
+  updateMap();
+};
+
+const resetForm = () => {
+  returnImg();
+  adFormElement.reset();
+  mapFilters.reset();
+  sliderElement.noUiSlider.set(0);
+  map.closePopup();
+  restMarkers();
+};
+
+resetButton.addEventListener('click', () => {
+  resetForm();
 });
 
-createAd.forEach((ad) =>{
-  const subPinMarker = L.marker({
-    lat: ad.newLocation.lat,
-    lng: ad.newLocation.lng,
-  },
-  {
-    icon: subPinIcon,
-  });
-  subPinMarker
-    .addTo(map)
-    .bindPopup(createCustomPopup(ad));
-});
+
+export {setMainPinCoordinate,resetForm,setAddress, createMarker};
