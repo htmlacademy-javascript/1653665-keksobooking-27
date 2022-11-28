@@ -13,6 +13,7 @@ fetch('https://27.javascript.pages.academy/keksobooking/data')
       return response.json();
     }
   }).then((adverts) => {
+
     setAdverts(adverts);
     createMarker();
   }).catch(showAlert.message);

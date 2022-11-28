@@ -16,6 +16,7 @@ const ADVERTS_COUNT = 10;
 const RERENDER_DELAY = 500;
 const MAP_ZOOM = 12;
 const LOCATION_TOKYO = {
+
   lat: 35.6895,
   lng: 139.692,
 };
@@ -87,6 +88,7 @@ const createCustomPopup = (newAd) => {
       photosContainer.height = 40;
       photosContainer.alt = 'Фотография жилья';
       photosContainer.src = photos;
+
       fragment.append(photosContainer);
     });
     popupElement.querySelector('.popup__photos').append(fragment);
@@ -169,6 +171,7 @@ const createMarker = () => {
 
 const createMarkerWithDebounce = debounce(() => createMarker(state.adverts), RERENDER_DELAY);
 
+
 const onUpdateMapMarker = () => {
   markerGroup.clearLayers();
   createMarkerWithDebounce();
@@ -176,6 +179,7 @@ const onUpdateMapMarker = () => {
 
 //сброс карты
 const updateMap = () => {
+
   mainPinMarker.setLatLng(LOCATION_TOKYO);
   map.setView(LOCATION_TOKYO, MAP_ZOOM);
   onUpdateMapMarker();
@@ -188,6 +192,7 @@ typeFilterElement.addEventListener('change', onUpdateMapMarker);
 priceFilterElement.addEventListener('change', onUpdateMapMarker);
 roomsFilterElement.addEventListener('change', onUpdateMapMarker);
 guestsFilterElement.addEventListener('change', onUpdateMapMarker);
+
 featuresCheckboxes.forEach((item) =>
   item.addEventListener('change', () => {
     if (item.checked) {

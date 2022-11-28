@@ -1,5 +1,6 @@
 import {showSuccessMessage,showErrorMessage } from './message.js';
 import {setMainPinCoordinate,resetForm,setAddress} from './markup-generate.js';
+
 const ROOMS_OPTION = {
   '1': ['1'],
   '2': ['1','2'],
@@ -37,6 +38,7 @@ const FILE_TYPES = ['gif','jpg','jpeg','png'];
 
 const addressInServer = 'https://27.javascript.pages.academy/keksobooking';
 
+
 const sliderElement = document.querySelector('.ad-form__slider');
 const avatarElement = document.querySelector('#avatar');
 const avatarPreview = document.querySelector('.ad-form-header__preview');
@@ -62,7 +64,6 @@ const onSendDataSuccess = () => {
   resetCoordinate();
   showSuccessMessage();
 };
-
 
 timeIn.addEventListener('change', () => {
   timeOut.value = timeIn.value;
@@ -120,8 +121,7 @@ adFormElement.addEventListener('submit', (evt) => {
   if(isValidate){
     const formData = new FormData(evt.target);
 
-    fetch(
-      addressInServer,
+    fetch(addressInServer,
       {
         method: 'POST',
         body: formData,
@@ -193,6 +193,7 @@ fileElement.addEventListener('change', () => {
   }
 });
 
+
 const returnImg = () => {
   avatarPreview.innerHTML = '';
   filePreview.innerHTML = '';
@@ -205,3 +206,4 @@ const returnImg = () => {
 };
 
 export {sliderElement,adFormElement,returnImg};
+
