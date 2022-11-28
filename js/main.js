@@ -7,8 +7,12 @@ import {setAdverts} from './data.js';
 
 
 fetch('https://27.javascript.pages.academy/keksobooking/data')
-  .then((response) => response.json(),activeFilter()
-  ).then((adverts) => {
+  .then((response) => {
+    if(response.ok) {
+      activeFilter();
+      return response.json();
+    }
+  }).then((adverts) => {
     setAdverts(adverts);
     createMarker();
   }).catch(showAlert.message);
