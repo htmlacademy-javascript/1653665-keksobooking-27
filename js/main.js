@@ -10,8 +10,8 @@ fetch('https://27.javascript.pages.academy/keksobooking/data')
   .then((response) => {
     if(response.ok) {
       activeFilter();
-      return response.json();
       onSendDataSuccess();
+      return response.json();
     } else {
       showAlert('Не удалось загрузить фотографии других пользователей');
     }
