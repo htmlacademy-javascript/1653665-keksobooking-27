@@ -1,6 +1,5 @@
 const adForm = document.querySelector('.ad-form');
 const mapFilters = document.querySelectorAll('.map__filter');
-
 const adFieldsets = adForm.querySelectorAll('fieldset');
 const mapFeatures = document.querySelector('.map__features');
 
