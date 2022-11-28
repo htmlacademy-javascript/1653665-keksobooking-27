@@ -1,5 +1,5 @@
 import{activeForm} from './status-form.js';
-import{sliderElement,adFormElement,returnImg} from './valid-form.js';
+import{slider,adFormElement,returnImg,sliderElement} from './valid-form.js';
 import{
   getAdvertFilter,
   typeFilterElement,
@@ -49,6 +49,9 @@ L.tileLayer(
   },
 ).addTo(map);
 
+if (map) {
+  slider();
+}
 
 const mainPinIcon = L.icon({
   iconUrl:'./img/main-pin.svg',
