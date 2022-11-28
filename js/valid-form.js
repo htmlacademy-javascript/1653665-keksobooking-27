@@ -129,6 +129,8 @@ adFormElement.addEventListener('submit', (evt) => {
     ).then((response) => {
       if(response.ok) {
         onSendDataSuccess();
+      } else {
+        showErrorMessage();
       }
     }).catch(showErrorMessage);
   }
