@@ -52,7 +52,6 @@ const roomNumber = adFormElement.querySelector('[name ="rooms"]');
 const capacity = adFormElement.querySelector('[name="capacity"]');
 
 
-
 const resetCoordinate = () => {
   setMainPinCoordinate(START_COORDINATE);
   setAddress(START_COORDINATE);

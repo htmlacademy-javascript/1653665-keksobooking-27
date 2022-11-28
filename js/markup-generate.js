@@ -22,8 +22,7 @@ const locationTokyo = {
 const mapFilters = document.querySelector('.map__filters');
 const adressInput = document.querySelector('#address');
 const resetButton = document.querySelector('[type="reset"]');
-const filePreview = document.querySelector('.ad-form__photo');
-const avatarPreview = document.querySelector('.ad-form-header__preview');
+
 const typeApart = {
   flat: 'Квартира',
   bungalow: 'Бунгало',
@@ -140,6 +139,7 @@ const setAddress = ({lat,lng}) => {
 };
 
 const markerGroup = L.layerGroup().addTo(map);
+
 
 const createMarker = () => {
   const filterAdverts = [];
