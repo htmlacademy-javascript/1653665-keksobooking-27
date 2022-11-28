@@ -126,7 +126,11 @@ adFormElement.addEventListener('submit', (evt) => {
         method: 'POST',
         body: formData,
       },
-    ).then(onSendDataSuccess).catch(showErrorMessage);
+    ).then((response) => {
+      if(response.ok) {
+        onSendDataSuccess();
+      }
+    }).catch(showErrorMessage);
   }
 });
 
