@@ -1,10 +1,8 @@
-import {slider} from './valid-form.js';
-
 const adForm = document.querySelector('.ad-form');
-const mapFilter = document.querySelector('.map__filters');
+const mapFilters = document.querySelectorAll('.map__filter');
+
 const adFieldsets = adForm.querySelectorAll('fieldset');
-const formElement = document.querySelector('.map__features');
-const fieldsetElements = formElement.querySelectorAll('input, select, div.ad-form__slider');
+const mapFeatures = document.querySelector('.map__features');
 
 
 const unActiveForm = () => {
@@ -16,24 +14,23 @@ const unActiveForm = () => {
 
 const activeForm = () => {
   adForm.classList.remove('ad-form--disabled');
-  slider();
   adFieldsets.forEach((adFieldset) => {
     adFieldset.disabled = false;
   });
 };
 
 const unActiveFilter = () => {
-  mapFilter.classList.add('ad-form--disabled');
-  for(const fieldsetElement of fieldsetElements ) {
-    fieldsetElement.disabled = true;
-  }
+  mapFilters.forEach((mapFilter) => {
+    mapFilter.disabled = true;
+  });
+  mapFeatures.disabled = true;
 };
 
 const activeFilter = () => {
-  mapFilter.classList.remove('ad-form--disabled');
-  for(const fieldsetElement of fieldsetElements ) {
-    fieldsetElement.disabled = false;
-  }
+  mapFilters.forEach((mapFilter) => {
+    mapFilter.disabled = false;
+  });
+  mapFeatures.disabled = false;
 };
 
 unActiveForm();
