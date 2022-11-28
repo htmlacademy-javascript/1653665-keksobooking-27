@@ -1,5 +1,5 @@
 import{activeForm} from './status-form.js';
-import{sliderElement,adFormElement} from './valid-form.js';
+import{sliderElement,adFormElement,returnImg} from './valid-form.js';
 import{
   getAdvertFilter,
   typeFilterElement,
@@ -15,13 +15,15 @@ import{debounce} from './util.js';
 const ADVERTS_COUNT = 10;
 const RERENDER_DELAY = 500;
 const MAP_ZOOM = 12;
-const locationTokyo = {
+const LOCATION_TOKYO = {
+
   lat: 35.6895,
   lng: 139.692,
 };
 const mapFilters = document.querySelector('.map__filters');
 const adressInput = document.querySelector('#address');
 const resetButton = document.querySelector('[type="reset"]');
+
 const typeApart = {
   flat: 'Квартира',
   bungalow: 'Бунгало',
@@ -36,9 +38,9 @@ const map = L.map('map-canvas')
     activeForm();
   })
   .setView({
-    lat: 35.681217,
-    lng : 139.753596
-  }, 12);
+    lat: LOCATION_TOKYO.lat,
+    lng : LOCATION_TOKYO.lng
+  }, MAP_ZOOM);
 
 L.tileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -78,6 +80,7 @@ const createCustomPopup = (newAd) => {
   popupElement.querySelector('.popup__text--time').textContent = `Заезд после ${newAd.offer.checkin}, выезд до ${newAd.offer.checkout}`;
   popupElement.querySelector('.popup__description').textContent = newAd.offer.description;
   if(newAd.offer.photos) {
+    const fragment = document.createDocumentFragment();
     newAd.offer.photos.forEach((photos) => {
       const photosContainer = document.createElement('img');
       photosContainer.classList.add('popup__photo');
@@ -85,8 +88,10 @@ const createCustomPopup = (newAd) => {
       photosContainer.height = 40;
       photosContainer.alt = 'Фотография жилья';
       photosContainer.src = photos;
-      popupElement.querySelector('.popup__photos').append(photosContainer);
+
+      fragment.append(photosContainer);
     });
+    popupElement.querySelector('.popup__photos').append(fragment);
   }
 
   if(newAd.offer.features) {
@@ -106,7 +111,7 @@ const createCustomPopup = (newAd) => {
 
 
 const mainPinMarker = L.marker(
-  locationTokyo,
+  LOCATION_TOKYO,
   {
     draggable: true,
     icon: mainPinIcon,
@@ -137,6 +142,7 @@ const setAddress = ({lat,lng}) => {
 
 const markerGroup = L.layerGroup().addTo(map);
 
+
 const createMarker = () => {
   const filterAdverts = [];
   for (const advert of state.adverts) {
@@ -165,25 +171,28 @@ const createMarker = () => {
 
 const createMarkerWithDebounce = debounce(() => createMarker(state.adverts), RERENDER_DELAY);
 
-const updateMapMarker = () => {
+
+const onUpdateMapMarker = () => {
   markerGroup.clearLayers();
   createMarkerWithDebounce();
 };
 
 //сброс карты
 const updateMap = () => {
-  mainPinMarker.setLatLng(locationTokyo);
-  map.setView(locationTokyo, MAP_ZOOM);
-  updateMapMarker();
+
+  mainPinMarker.setLatLng(LOCATION_TOKYO);
+  map.setView(LOCATION_TOKYO, MAP_ZOOM);
+  onUpdateMapMarker();
 };
 
 const setAddressDefault = () =>
-  (adressInput.value = `${locationTokyo.lat}, ${locationTokyo.lng}`);
+  (adressInput.value = `${LOCATION_TOKYO.lat}, ${LOCATION_TOKYO.lng}`);
 
-typeFilterElement.addEventListener('change', updateMapMarker);
-priceFilterElement.addEventListener('change', updateMapMarker);
-roomsFilterElement.addEventListener('change', updateMapMarker);
-guestsFilterElement.addEventListener('change', updateMapMarker);
+typeFilterElement.addEventListener('change', onUpdateMapMarker);
+priceFilterElement.addEventListener('change', onUpdateMapMarker);
+roomsFilterElement.addEventListener('change', onUpdateMapMarker);
+guestsFilterElement.addEventListener('change', onUpdateMapMarker);
+
 featuresCheckboxes.forEach((item) =>
   item.addEventListener('change', () => {
     if (item.checked) {
@@ -191,7 +200,7 @@ featuresCheckboxes.forEach((item) =>
     } else {
       featuresFilterArrays.splice(featuresFilterArrays.indexOf(item.value, 0), 1);
     }
-    updateMapMarker();
+    onUpdateMapMarker();
   }),
 );
 
@@ -201,6 +210,7 @@ const restMarkers = () => {
 };
 
 const resetForm = () => {
+  returnImg();
   adFormElement.reset();
   mapFilters.reset();
   sliderElement.noUiSlider.set(0);
