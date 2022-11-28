@@ -126,33 +126,37 @@ adFormElement.addEventListener('submit', (evt) => {
         method: 'POST',
         body: formData,
       },
-    ).then(onSendDataSuccess).catch(showErrorMessage);
+    ).then((response) => {
+      if(response.ok) {
+        onSendDataSuccess();
+      }
+    }).catch(showErrorMessage);
   }
 });
 
-
-noUiSlider.create(sliderElement, {
-  range: {
-    min: 0,
-    max: MAX_PRICE,
-  },
-  start: 0,
-  step: 1,
-  connect: 'lower',
-  format: {
-    to: function (value) {
-      return value.toFixed();
+const getSlider = () => {
+  noUiSlider.create(sliderElement, {
+    range: {
+      min: 0,
+      max: MAX_PRICE,
     },
-    from: function (value) {
-      return parseFloat(value);
-    }
-  },
-});
+    start: 0,
+    step: 1,
+    connect: 'lower',
+    format: {
+      to: function (value) {
+        return value.toFixed();
+      },
+      from: function (value) {
+        return parseFloat(value);
+      }
+    },
+  });
 
-sliderElement.noUiSlider.on('update', () => {
-  priceElement.value = sliderElement.noUiSlider.get();
-});
-
+  sliderElement.noUiSlider.on('update', () => {
+    priceElement.value = sliderElement.noUiSlider.get();
+  });
+};
 priceElement.addEventListener('input', () => {
   sliderElement.noUiSlider.updateOptions({
     start: priceElement.value,
@@ -205,5 +209,4 @@ const returnImg = () => {
   avatarPreview.append(image);
 };
 
-export {sliderElement,adFormElement,returnImg};
-
+export {getSlider,adFormElement,returnImg, onSendDataSuccess,sliderElement};

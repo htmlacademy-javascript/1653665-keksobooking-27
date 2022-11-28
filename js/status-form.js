@@ -1,13 +1,11 @@
 const adForm = document.querySelector('.ad-form');
-const mapFilter = document.querySelector('.map__filters');
+const mapFilters = document.querySelectorAll('.map__filter');
 const adFieldsets = adForm.querySelectorAll('fieldset');
 const mapFeatures = document.querySelector('.map__features');
-const sliderElement = document.querySelector('.ad-form__slider');
 
 
 const unActiveForm = () => {
   adForm.classList.add('ad-form--disabled');
-  sliderElement.classList.add('ad-form--disabled');
   adFieldsets.forEach((adFieldset) => {
     adFieldset.disabled = true;
   });
@@ -15,19 +13,22 @@ const unActiveForm = () => {
 
 const activeForm = () => {
   adForm.classList.remove('ad-form--disabled');
-  sliderElement.classList.remove('ad-form--disabled');
   adFieldsets.forEach((adFieldset) => {
     adFieldset.disabled = false;
   });
 };
 
 const unActiveFilter = () => {
-  mapFilter.classList.add('ad-form--disabled');
+  mapFilters.forEach((mapFilter) => {
+    mapFilter.disabled = true;
+  });
   mapFeatures.disabled = true;
 };
 
 const activeFilter = () => {
-  mapFilter.classList.remove('ad-form--disabled');
+  mapFilters.forEach((mapFilter) => {
+    mapFilter.disabled = false;
+  });
   mapFeatures.disabled = false;
 };
 
