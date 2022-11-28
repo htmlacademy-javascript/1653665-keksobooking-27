@@ -1,5 +1,5 @@
 import{activeForm} from './status-form.js';
-import{slider,adFormElement,returnImg,sliderElement} from './valid-form.js';
+import{getSlider,adFormElement,returnImg,sliderElement} from './valid-form.js';
 import{
   getAdvertFilter,
   typeFilterElement,
@@ -36,6 +36,7 @@ const typeApart = {
 const map = L.map('map-canvas')
   .on('load', () => {
     activeForm();
+    getSlider();
   })
   .setView({
     lat: LOCATION_TOKYO.lat,
@@ -48,10 +49,6 @@ L.tileLayer(
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
 ).addTo(map);
-
-if (map) {
-  slider();
-}
 
 const mainPinIcon = L.icon({
   iconUrl:'./img/main-pin.svg',

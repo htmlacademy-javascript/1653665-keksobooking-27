@@ -134,7 +134,7 @@ adFormElement.addEventListener('submit', (evt) => {
   }
 });
 
-const slider = () => {
+const getSlider = () => {
   noUiSlider.create(sliderElement, {
     range: {
       min: 0,
@@ -209,4 +209,4 @@ const returnImg = () => {
   avatarPreview.append(image);
 };
 
-export {slider,adFormElement,returnImg, onSendDataSuccess,sliderElement};
+export {getSlider,adFormElement,returnImg, onSendDataSuccess,sliderElement};
